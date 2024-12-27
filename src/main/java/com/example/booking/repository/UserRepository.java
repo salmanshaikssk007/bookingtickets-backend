@@ -1,8 +1,10 @@
 package com.example.booking.repository;
 
-import com.example.booking.model.User;
+import com.example.booking.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
+public interface UserRepository extends JpaRepository<Users, Long> {
+   
+    Users findByEmail(String email);
+
 }

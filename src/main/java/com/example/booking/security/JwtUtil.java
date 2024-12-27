@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class jwtUtil {
+public class JwtUtil {
     private final String secret = "for now we have no key"; // Replace with a secure key
 
     public String generateToken(String email) {
