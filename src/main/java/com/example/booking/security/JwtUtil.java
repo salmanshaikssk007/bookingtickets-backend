@@ -19,12 +19,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String extractEmail(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-    }
-
     public boolean validateToken(String token, String email) {
         return email.equals(extractEmail(token)) && !isTokenExpired(token);
+    }
+
+    public String extractEmail(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
     private boolean isTokenExpired(String token) {

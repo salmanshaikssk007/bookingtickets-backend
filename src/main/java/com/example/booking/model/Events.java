@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
+@Table(name = "Events")
 public class Events {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +33,8 @@ public class Events {
 
     @Column(nullable = false)
     private Integer availableSeats;
+
+    @ManyToMany(mappedBy = "events") // Inverse side of the relationship
+    private Set<Bookings> bookings = new HashSet<>();
+
 }

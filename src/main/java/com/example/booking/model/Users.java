@@ -8,15 +8,19 @@ import lombok.Data;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
     @Column(nullable = false , unique = true)
-    private String userEmail;
+    private String email;
 
     @Column(nullable = false)
-    private String userPassword;
+    private String name;
 
     @Column(nullable = false)
-    private String userRole;
+    private String password;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
 }
