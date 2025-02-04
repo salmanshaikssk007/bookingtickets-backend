@@ -9,17 +9,18 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "Events")
+@Table(name = "events")
 public class Events {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private Long eventId ;
 
     @Column(nullable = false)
     private String eventName;
 
     @Column(nullable =  false , length = 500)
-    private String desc ;
+    private String description ;
 
     @Column(nullable = false)
     private String location ;

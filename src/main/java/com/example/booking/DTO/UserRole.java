@@ -1,4 +1,4 @@
-package com.example.booking.model;
+package com.example.booking.DTO;
 
 public enum UserRole {
     ADMIN,

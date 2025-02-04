@@ -12,10 +12,11 @@ import java.util.Set;
 public class Bookings implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "booking_id")
     private Long bookingId;
 
     @ManyToOne
-    @JoinColumn(name = "userId" , nullable = false)
+    @JoinColumn(name = "user_id" , nullable = false)
     private Users user ;
 
     @ManyToMany
