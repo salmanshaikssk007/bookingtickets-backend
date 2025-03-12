@@ -1,5 +1,7 @@
 package com.example.booking.security;
 
+import com.example.booking.services.CustomUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +21,8 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig{
 
-    private UserDetailsService userDetailsService;
+    @Autowired
+    private CustomUserDetailService userDetailsService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -60,8 +63,8 @@ public class SecurityConfig{
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Using UserService to fetch user details
-        authProvider.setPasswordEncoder(passwordEncoder()); // Setting the password encoder
+        authProvider.setUserDetailsService(userDetailsService); // Using customUserDetailsService to fetch user details
+        authProvider.setPasswordEncoder(new BCryptPasswordEncoder()); // Setting the password encoder
 
         return new ProviderManager(List.of(authProvider)); // Using ProviderManager with the authProvider
     }

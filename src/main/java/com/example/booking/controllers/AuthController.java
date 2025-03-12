@@ -7,14 +7,12 @@ import com.example.booking.DTO.UserRole;
 import com.example.booking.model.Users;
 import com.example.booking.security.JwtUtil;
 import com.example.booking.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,35 +21,45 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
-    @Autowired
+    private final AuthenticationManager authenticationManager;
+
     private JwtUtil jwtUtil;
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private  BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("login entered");
+        Users user = userService.findUserByEmail(loginRequest.getEmail());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Invalid email or password"));
+        }
+
+        System.out.println("Entered Password: " + loginRequest.getPassword());
+        System.out.println("Stored Hashed Password: " + user.getPassword());
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            System.out.println("Passwords do not match!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("password"));
+        }
+
         try {
-            // Authenticate user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
-
-            // Set authentication in the security context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // Generate JWT token
-            String token = jwtUtil.generateToken(loginRequest.getEmail()); // Use username (email) here
-            return ResponseEntity.ok(new AuthResponse(token));
-
-        } catch (BadCredentialsException e) {
+            System.out.println("Authentication successful!");
+            return ResponseEntity.ok(new AuthResponse("Login success"));
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Invalid email or password"));
         }
     }
@@ -67,7 +75,12 @@ public class AuthController {
         Users newUser = new Users();
         newUser.setName(registerRequest.getUsername());
         newUser.setEmail(registerRequest.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword())); // Hash password
+
+        String hashedPassword = passwordEncoder.encode(registerRequest.getPassword());
+        System.out.println("Plaintext Password: " + registerRequest.getPassword());
+        System.out.println("Hashed Password (Stored in DB): " + hashedPassword);
+
+        newUser.setPassword(hashedPassword); // Hash before saving
         newUser.setRole(UserRole.USER); // Default role
 
         userService.saveUser(newUser);
