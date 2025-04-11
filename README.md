@@ -34,6 +34,7 @@ This is the **backend service** for an Event Ticket Booking Platform built with 
 ---
 
 ## 📁 Project Structure
+```bash
 bookingtickets-backend/
 ├── src/
 │   ├── main/java/com/example/bookingtickets/
@@ -41,7 +42,7 @@ bookingtickets-backend/
 ├── application.properties
 ├── Dockerfile
 └── README.md
-
+```
 ---
 
 ## 🛠️ Getting Started
